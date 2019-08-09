@@ -197,12 +197,14 @@ def main():
         print("error")
 
 
-    ser = serial.Serial(
-            port="COM6",
+  ser = serial.Serial(
+            port="COM3",
             baudrate=9600,
-            bytesize=serial.SEVENBITS,
-            parity=serial.PARITY_EVEN,
-            stopbits=serial.STOPBITS_ONE
+            bytesize=serial.EIGHTBITS,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            dsrdtr=True,
+            rtscts=True
         )
     ser.isOpen()
 
