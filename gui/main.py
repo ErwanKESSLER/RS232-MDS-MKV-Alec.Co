@@ -11,6 +11,7 @@ import base64
 
 sleep = True
 connected = False
+ser = None
 
 
 def image_file_to_bytes(image64, size):
@@ -49,7 +50,6 @@ def serial_ports():
             result.append(port)
         except (OSError, serial.SerialException):
             pass
-    result=["COM3","COM4"]
     return result
 
 
@@ -63,14 +63,14 @@ def ShowMeTheButtons():
         [sg.Combo(values=serial_ports(), size=(10, 50), key='_portList_'),
          sg.Button('Connect', image_data=image_file_to_bytes(green_pill64, (100, 50)), button_color=wcolor,
                    font='Any 15',
-                   pad=(0, 0), key='_connect_',size=(100, 50))]
+                   pad=(0, 0), key='_connect_', size=(100, 50))]
     ]
 
     device_buttons = [
         [sg.Button('Wake Up', image_data=image_file_to_bytes(red_pill64, (100, 50)), button_color=wcolor, font='Any 15',
-                   pad=(0, 0), key='_wakeup_',size=(100, 50)),
+                   pad=(0, 0), key='_wakeup_', size=(100, 50)),
          sg.Button('Get Header', image_data=image_file_to_bytes(button64, (100, 50)), button_color=wcolor,
-                   font='Any 15',size=(100, 50),
+                   font='Any 15', size=(100, 50),
                    pad=(0, 0), key='_header_')]]
 
     # layout = toolbar_buttons
@@ -95,7 +95,7 @@ def ShowMeTheButtons():
         elif button == "_header_":
             header_handler(window)
         elif button == "_connect_":
-            connect_handler(window,values)
+            connect_handler(window, values)
 
 
 def header_handler(window):
@@ -106,36 +106,147 @@ def header_handler(window):
             DisplayHeader()
 
 
+def flushEverything():
+    if ser is None:
+        return
+    ser.reset_input_buffer()
+    ser.reset_output_buffer()
+    while ser.in_waiting:
+        ser.read(1)
+    while ser.out_waiting:
+        ser.write(1)
+    ser.reset_input_buffer()
+    ser.reset_output_buffer()
+    ser.flush()
+
+
+def encodeMessage(data):
+    xon = '\x11'
+    carriage = '\x0D'
+    return (xon + xon + data + carriage).encode()
+
+
+def isMatch(result, data):
+    return encodeMessage(data) == result
+
+
+def checkReadWithMessage():
+    time.sleep(0.5)
+    ser.flush()
+    count = 15
+    while count:
+        bits = ser.in_waiting
+        if bits:
+            result = ser.read(bits)
+            if result[0:5] == b'\x11\x11ak,':
+                print(result,"was intercepted")
+                return True
+        time.sleep(1)
+        count -= 1
+    return False
+
+
+def checkRead(dataCheck):
+    time.sleep(0.5)
+    ser.flush()
+    count = 15
+    while count:
+        bits = ser.in_waiting
+        if bits:
+            result = ser.read(bits)
+            if isMatch(result, dataCheck):
+                print("Waked up successfully")
+                return True
+        time.sleep(1)
+        count -= 1
+    return False
+
+
 def WakeUp():
-    pass
+    """
+    :return: None if the serial is not connected, false if the waking up failed and true is succeeded
+    """
+    global ser
+    flushEverything()
+    if ser is not None:
+        ser.write(encodeMessage("AA"))
+        return checkRead("er,AA")
+    return ser
 
 
 def Sleep():
-    pass
+    global ser
+    flushEverything()
+    if ser is not None:
+        ser.write(encodeMessage("exit,"))
+        return checkRead("ak,exit,")
+    return ser
 
 
 def GetHeader():
-    pass
+    global ser
+    flushEverything()
+    if ser is not None and not sleep:
+        ser.write(encodeMessage("head?,"))
+        return checkReadWithMessage()
+    return ser
 
 
 def DisplayHeader():
     pass
 
+
+def isOpen():
+    global ser
+    if ser is not None:
+        return ser.isOpen()
+    return ser
+
+
 def Connect(com_port):
-    print("Starting to connect to port ",com_port)
-    pass
+    global ser
+    if com_port != "":
+        try:
+            print("Starting to connect to port ", com_port)
+            ser = serial.Serial(
+                port=com_port,
+                baudrate=9600,
+                bytesize=serial.EIGHTBITS,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                dsrdtr=True,
+                rtscts=True
+            )
+
+        except serial.SerialException:
+            print(com_port, "failed to connect")
+        return isOpen()
+    print("Not possible to connect to no ports")
+    return None
+
+
 def Disconnect():
-    pass
-def connect_handler(window,values):
+    global ser
+    if ser is not None:
+        ser.close()
+    return isOpen()
+
+
+def connect_handler(window, values):
     global connected
     if connected:
         result = Disconnect()
+        if result is not None and not result:
+            print("disconnected")
         window.Element('_connect_').Update("Connect", image_data=image_file_to_bytes(green_pill64, (100, 50)))
         connected = not connected
     else:
         result = Connect(values["_portList_"])
+        if result:
+            print("connected")
         window.Element('_connect_').Update("Disconnect", image_data=image_file_to_bytes(red_pill64, (100, 50)))
         connected = not connected
+
 
 def sleep_handler(window):
     global sleep, connected
