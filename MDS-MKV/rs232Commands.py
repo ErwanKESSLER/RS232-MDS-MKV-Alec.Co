@@ -68,6 +68,7 @@ def SendMessage(msg):
             time.sleep(0.5)
             logging.info("Message {} was acknowledged".format(msg))
             device.serial_device.write(encodeMessage("go,"))
+            time.sleep(0.5)
             if checkReadWithMessage('ok'):
                 logging.info("Device started the command")
                 return True
@@ -76,7 +77,24 @@ def SendMessage(msg):
         else:
             logging.critical("Message {} was not acknowledged".format(msg))
             return False
-    logging.critical("Get header was called but the device is asleep or not connected")
+    logging.critical("Send message was called but the device is asleep or not connected")
+    return device.serial_device
+
+
+def SendCommand(msg, ak):
+    global device
+    flushEverything()
+    if device.serial_device is not None and not device.sleep and device.connected:
+        logging.info("Send command was called on the device with : " + msg)
+        device.serial_device.write(encodeMessage(msg))
+        result = checkReadWithMessage(ak)
+        if result:
+            logging.info("Command {} was acknowledged with : {}".format(msg, result))
+            return result
+        else:
+            logging.critical("Command {} was not acknowledged".format(msg))
+            return False
+    logging.critical("Send Command was called but the device is asleep or not connected")
     return device.serial_device
 
 
@@ -88,7 +106,7 @@ def checkReadWithMessage(msg):
         bits = device.serial_device.in_waiting
         if bits:
             result = device.serial_device.read(bits)
-            if result[0:3 + len(msg)] == b'\x11\x11' + msg.encode() + b',':
+            if result[0:(3 + len(msg))-(1 if msg=="" else 0)] == b'\x11\x11' + msg.encode() + (b',' if msg != "" else b''):
                 logging.info(str(result) + " was read and match the pattern")
                 return result
             else:
