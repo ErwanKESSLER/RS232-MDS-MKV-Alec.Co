@@ -1,0 +1,244 @@
+2019-09-01 01:20:17,204:INFO:Device is disconnected, toggling off the buttons
+2019-09-01 01:20:17,205:INFO:Device is asleep, toggling off the buttons
+2019-09-01 01:20:17,206:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:20:17,207:INFO:Not enabled
+2019-09-01 01:20:18,372:INFO:Button pressed was: _connect_
+2019-09-01 01:20:18,373:INFO:Starting a connection session
+2019-09-01 01:20:18,373:INFO:Starting to connect to port COM3
+2019-09-01 01:20:18,461:INFO:Device was connected and the color has been set to red
+2019-09-01 01:20:18,462:CRITICAL:The date was not set, got None
+2019-09-01 01:20:18,462:INFO:Device is connected, toggling on the buttons
+2019-09-01 01:20:18,463:INFO:Device is asleep, toggling off the buttons
+2019-09-01 01:20:18,469:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:20:18,470:INFO:Not enabled
+2019-09-01 01:20:19,465:INFO:Button pressed was: _wakeup_
+2019-09-01 01:20:19,466:CRITICAL:The device is not usable and cannot be flushed
+2019-09-01 01:20:19,466:INFO:Wake up was called on the device
+2019-09-01 01:20:19,466:INFO:b'\x11\x11AA\r'was sent
+2019-09-01 01:20:19,967:INFO:b'\x11\x11er,AA\r'was sent
+2019-09-01 01:20:19,967:INFO:b'\x11\x11er,AA\r' and b'\x11\x11er,AA\r' succeeded to match
+2019-09-01 01:20:19,967:INFO:b'\x11\x11er,AA\r' was read and matched the confirmation: er,AA
+2019-09-01 01:20:19,969:INFO:Device has been put into active mode and color has been set to green
+2019-09-01 01:20:19,969:INFO:Device is connected, toggling on the buttons
+2019-09-01 01:20:19,970:INFO:Device is awake, toggling on the buttons
+2019-09-01 01:20:19,971:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:20:19,972:INFO:Not enabled
+2019-09-01 01:20:21,557:INFO:Button pressed was: _header_
+2019-09-01 01:20:21,558:INFO:Buffer was flush
+2019-09-01 01:20:21,558:INFO:Buffer was reseted
+2019-09-01 01:20:21,558:INFO:Get header was called on the device
+2019-09-01 01:20:21,558:INFO:b'\x11\x11head?,\r'was sent
+2019-09-01 01:20:22,059:INFO:b'\x11\x11ak,L,201394,-1.01078e+00,1.010783e+00,0,0,2019,09,01,00,51,11,1,646,\r' was read and match the pattern
+2019-09-01 01:20:22,059:INFO:Header was successfully received, its content is : L,201394,-1.01078e+00,1.010783e+00,0,0,2019,09,01,00,51,11,1,646
+2019-09-01 01:20:22,059:INFO:Buffer was flush
+2019-09-01 01:20:22,060:INFO:Buffer was reseted
+2019-09-01 01:20:22,060:INFO:Get Current Date was called on the device
+2019-09-01 01:20:22,060:INFO:b'\x11\x11date?,\r'was sent
+2019-09-01 01:20:22,562:INFO:b'\x11\x11date,2000,0,0,\r' was read and match the pattern
+2019-09-01 01:20:22,562:INFO:Buffer was flush
+2019-09-01 01:20:22,563:INFO:Buffer was reseted
+2019-09-01 01:20:22,567:INFO:Get Current Time was called on the device
+2019-09-01 01:20:22,568:INFO:b'\x11\x11time?,\r'was sent
+2019-09-01 01:20:23,069:INFO:b'\x11\x11time,0,18,2,\r' was read and match the pattern
+2019-09-01 01:20:23,069:INFO:Current Date was successfully received, its content is : 2000,0,0
+2019-09-01 01:20:23,071:INFO:Current Time was successfully received, its content is : 0,18,2
+2019-09-01 01:20:23,075:INFO:Trying to find the end date for 645 seconds in the future
+2019-09-01 01:20:23,075:INFO:Starting date is : 2019-09-01 00:51:11
+2019-09-01 01:20:23,076:INFO:Ending date is : 2019-09-01 01:01:56
+2019-09-01 01:20:23,078:INFO:Device is connected, toggling on the buttons
+2019-09-01 01:20:23,080:INFO:Device is awake, toggling on the buttons
+2019-09-01 01:20:23,082:INFO:Header were set, toggling on the buttons
+2019-09-01 01:20:23,085:INFO:Not enabled
+2019-09-01 01:20:26,447:INFO:Button pressed was: _connect_
+2019-09-01 01:20:26,448:INFO:Starting a connection session
+2019-09-01 01:20:26,449:INFO:Buffer was flush
+2019-09-01 01:20:26,452:INFO:Buffer was reseted
+2019-09-01 01:20:26,453:INFO:Sleep was called on the device
+2019-09-01 01:20:26,453:INFO:b'\x11\x11exit,\r'was sent
+2019-09-01 01:20:26,955:INFO:b'\x11\x11ak,exit,\r'was sent
+2019-09-01 01:20:26,955:INFO:b'\x11\x11ak,exit,\r' and b'\x11\x11ak,exit,\r' succeeded to match
+2019-09-01 01:20:26,956:INFO:b'\x11\x11ak,exit,\r' was read and matched the confirmation: ak,exit,
+2019-09-01 01:20:26,958:INFO:Device has been put into sleeping mode and color has been set to red
+2019-09-01 01:20:27,004:INFO:Device was disconnected and the color has been set to green
+2019-09-01 01:20:27,005:INFO:Device is disconnected, toggling off the buttons
+2019-09-01 01:20:27,007:INFO:Device is asleep, toggling off the buttons
+2019-09-01 01:20:27,009:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:20:27,011:INFO:Not enabled
+2019-09-01 01:20:29,517:INFO:Button pressed was: _connect_
+2019-09-01 01:20:29,518:INFO:Starting a connection session
+2019-09-01 01:20:29,519:INFO:Starting to connect to port COM3
+2019-09-01 01:20:29,611:INFO:Device was connected and the color has been set to red
+2019-09-01 01:20:29,612:CRITICAL:The date was not set, got None
+2019-09-01 01:20:29,613:INFO:Device is connected, toggling on the buttons
+2019-09-01 01:20:29,616:INFO:Device is asleep, toggling off the buttons
+2019-09-01 01:20:29,619:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:20:29,620:INFO:Not enabled
+2019-09-01 01:20:30,186:INFO:Button pressed was: _wakeup_
+2019-09-01 01:20:30,186:CRITICAL:The device is not usable and cannot be flushed
+2019-09-01 01:20:30,187:INFO:Wake up was called on the device
+2019-09-01 01:20:30,188:INFO:b'\x11\x11AA\r'was sent
+2019-09-01 01:20:30,793:INFO:Reading for confirmation failed by1hops
+2019-09-01 01:20:30,893:INFO:Reading for confirmation failed by2hops
+2019-09-01 01:20:30,993:INFO:Reading for confirmation failed by3hops
+2019-09-01 01:20:31,094:INFO:Reading for confirmation failed by4hops
+2019-09-01 01:20:31,195:INFO:Reading for confirmation failed by5hops
+2019-09-01 01:20:31,295:INFO:Reading for confirmation failed by6hops
+2019-09-01 01:20:31,396:INFO:Reading for confirmation failed by7hops
+2019-09-01 01:20:31,497:INFO:Reading for confirmation failed by8hops
+2019-09-01 01:20:31,597:INFO:Reading for confirmation failed by9hops
+2019-09-01 01:20:31,697:INFO:Reading for confirmation failed by10hops
+2019-09-01 01:20:31,797:INFO:Reading for confirmation failed by11hops
+2019-09-01 01:20:31,898:INFO:Reading for confirmation failed by12hops
+2019-09-01 01:20:31,998:INFO:Reading for confirmation failed by13hops
+2019-09-01 01:20:32,098:INFO:Reading for confirmation failed by14hops
+2019-09-01 01:20:32,199:INFO:Reading for confirmation failed by15hops
+2019-09-01 01:20:32,199:CRITICAL:Device failed to wake up
+2019-09-01 01:20:33,480:INFO:Starting a connection session
+2019-09-01 01:20:33,525:INFO:Device was disconnected and the color has been set to green
+2019-09-01 01:20:33,525:INFO:Device is disconnected, toggling off the buttons
+2019-09-01 01:20:33,528:INFO:Device is asleep, toggling off the buttons
+2019-09-01 01:20:33,531:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:20:33,532:INFO:Not enabled
+2019-09-01 01:23:26,948:INFO:Device is disconnected, toggling off the buttons
+2019-09-01 01:23:26,949:INFO:Device is asleep, toggling off the buttons
+2019-09-01 01:23:26,949:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:23:26,950:INFO:Not enabled
+2019-09-01 01:23:32,359:INFO:Button pressed was: _connect_
+2019-09-01 01:23:32,359:INFO:Starting a connection session
+2019-09-01 01:23:32,359:INFO:Starting to connect to port COM3
+2019-09-01 01:23:32,449:INFO:Device was connected and the color has been set to red
+2019-09-01 01:23:32,449:CRITICAL:The date was not set, got None
+2019-09-01 01:23:32,449:INFO:Device is connected, toggling on the buttons
+2019-09-01 01:23:32,450:INFO:Device is asleep, toggling off the buttons
+2019-09-01 01:23:32,451:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:23:32,451:INFO:Not enabled
+2019-09-01 01:23:33,028:INFO:Button pressed was: _wakeup_
+2019-09-01 01:23:33,028:CRITICAL:The device is not usable and cannot be flushed
+2019-09-01 01:23:33,028:INFO:Wake up was called on the device
+2019-09-01 01:23:33,028:INFO:b'\x11\x11AA\r'was sent
+2019-09-01 01:23:33,630:INFO:Reading for confirmation failed by1hops
+2019-09-01 01:23:33,731:INFO:Reading for confirmation failed by2hops
+2019-09-01 01:23:33,832:INFO:Reading for confirmation failed by3hops
+2019-09-01 01:23:33,932:INFO:Reading for confirmation failed by4hops
+2019-09-01 01:23:34,033:INFO:Reading for confirmation failed by5hops
+2019-09-01 01:23:34,133:INFO:Reading for confirmation failed by6hops
+2019-09-01 01:23:34,234:INFO:Reading for confirmation failed by7hops
+2019-09-01 01:23:34,335:INFO:Reading for confirmation failed by8hops
+2019-09-01 01:23:34,436:INFO:Reading for confirmation failed by9hops
+2019-09-01 01:23:34,536:INFO:Reading for confirmation failed by10hops
+2019-09-01 01:23:34,637:INFO:Reading for confirmation failed by11hops
+2019-09-01 01:23:34,738:INFO:Reading for confirmation failed by12hops
+2019-09-01 01:23:34,838:INFO:Reading for confirmation failed by13hops
+2019-09-01 01:23:34,938:INFO:Reading for confirmation failed by14hops
+2019-09-01 01:23:35,038:INFO:Reading for confirmation failed by15hops
+2019-09-01 01:23:35,038:CRITICAL:Device failed to wake up
+2019-09-01 01:23:36,543:INFO:Starting a connection session
+2019-09-01 01:23:36,588:INFO:Device was disconnected and the color has been set to green
+2019-09-01 01:23:36,588:INFO:Device is disconnected, toggling off the buttons
+2019-09-01 01:23:36,590:INFO:Device is asleep, toggling off the buttons
+2019-09-01 01:23:36,590:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:23:36,591:INFO:Not enabled
+2019-09-01 01:23:40,356:INFO:Button pressed was: _connect_
+2019-09-01 01:23:40,356:INFO:Starting a connection session
+2019-09-01 01:23:40,356:INFO:Starting to connect to port COM3
+2019-09-01 01:23:40,444:INFO:Device was connected and the color has been set to red
+2019-09-01 01:23:40,445:CRITICAL:The date was not set, got None
+2019-09-01 01:23:40,450:INFO:Device is connected, toggling on the buttons
+2019-09-01 01:23:40,451:INFO:Device is asleep, toggling off the buttons
+2019-09-01 01:23:40,451:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:23:40,452:INFO:Not enabled
+2019-09-01 01:23:41,017:INFO:Button pressed was: _wakeup_
+2019-09-01 01:23:41,017:CRITICAL:The device is not usable and cannot be flushed
+2019-09-01 01:23:41,017:INFO:Wake up was called on the device
+2019-09-01 01:23:41,017:INFO:b'\x11\x11AA\r'was sent
+2019-09-01 01:23:41,517:INFO:b'\x11\x11er,AA\r'was sent
+2019-09-01 01:23:41,517:INFO:b'\x11\x11er,AA\r' and b'\x11\x11er,AA\r' succeeded to match
+2019-09-01 01:23:41,517:INFO:b'\x11\x11er,AA\r' was read and matched the confirmation: er,AA
+2019-09-01 01:23:41,518:INFO:Device has been put into active mode and color has been set to green
+2019-09-01 01:23:41,518:INFO:Device is connected, toggling on the buttons
+2019-09-01 01:23:41,519:INFO:Device is awake, toggling on the buttons
+2019-09-01 01:23:41,520:INFO:Header are unset, toggling off the buttons
+2019-09-01 01:23:41,520:INFO:Not enabled
+2019-09-01 01:23:42,071:INFO:Button pressed was: _header_
+2019-09-01 01:23:42,071:INFO:Buffer was flush
+2019-09-01 01:23:42,071:INFO:Buffer was reseted
+2019-09-01 01:23:42,071:INFO:Get header was called on the device
+2019-09-01 01:23:42,071:INFO:b'\x11\x11head?,\r'was sent
+2019-09-01 01:23:42,572:INFO:b'\x11\x11ak,L,201394,-1.01078e+00,1.010783e+00,0,0,2019,09,01,00,51,11,1,646,\r' was read and match the pattern
+2019-09-01 01:23:42,572:INFO:Header was successfully received, its content is : L,201394,-1.01078e+00,1.010783e+00,0,0,2019,09,01,00,51,11,1,646
+2019-09-01 01:23:42,572:INFO:Buffer was flush
+2019-09-01 01:23:42,572:INFO:Buffer was reseted
+2019-09-01 01:23:42,572:INFO:Get Current Date was called on the device
+2019-09-01 01:23:42,572:INFO:b'\x11\x11date?,\r'was sent
+2019-09-01 01:23:43,072:INFO:b'\x11\x11date,2000,0,0,\r' was read and match the pattern
+2019-09-01 01:23:43,072:INFO:Buffer was flush
+2019-09-01 01:23:43,072:INFO:Buffer was reseted
+2019-09-01 01:23:43,072:INFO:Get Current Time was called on the device
+2019-09-01 01:23:43,072:INFO:b'\x11\x11time?,\r'was sent
+2019-09-01 01:23:43,573:INFO:b'\x11\x11time,0,21,22,\r' was read and match the pattern
+2019-09-01 01:23:43,573:INFO:Current Date was successfully received, its content is : 2000,0,0
+2019-09-01 01:23:43,573:INFO:Current Time was successfully received, its content is : 0,21,22
+2019-09-01 01:23:43,573:INFO:Trying to find the end date for 645 seconds in the future
+2019-09-01 01:23:43,573:INFO:Starting date is : 2019-09-01 00:51:11
+2019-09-01 01:23:43,573:INFO:Ending date is : 2019-09-01 01:01:56
+2019-09-01 01:23:43,574:INFO:Device is connected, toggling on the buttons
+2019-09-01 01:23:43,574:INFO:Device is awake, toggling on the buttons
+2019-09-01 01:23:43,575:INFO:Header were set, toggling on the buttons
+2019-09-01 01:23:43,576:INFO:Not enabled
+2019-09-01 01:23:49,947:INFO:Button pressed was: _set_memory_
+2019-09-01 01:23:49,947:INFO:Buffer was flush
+2019-09-01 01:23:49,947:INFO:Buffer was reseted
+2019-09-01 01:23:49,947:INFO:Send command was called on the device with : open,
+2019-09-01 01:23:49,947:INFO:b'\x11\x11open,\r'was sent
+2019-09-01 01:23:50,449:INFO:b'\x11\x11ak,open,\r' was read and match the pattern
+2019-09-01 01:23:50,449:INFO:Command open, was acknowledged with : b'\x11\x11ak,open,\r'
+2019-09-01 01:23:50,449:INFO:Reading for 7 messages of 100 samples
+2019-09-01 01:23:50,449:INFO:Buffer was flush
+2019-09-01 01:23:50,449:INFO:Buffer was reseted
+2019-09-01 01:23:50,449:INFO:b'\x11\x11read,\r'was sent
+2019-09-01 01:23:50,949:INFO:This numbers might be useful : 17,81,0,1,9,32,25
+2019-09-01 01:23:50,949:INFO:Buffer was flush
+2019-09-01 01:23:50,949:INFO:Buffer was reseted
+2019-09-01 01:23:50,949:INFO:b'\x11\x11read,\r'was sent
+2019-09-01 01:23:51,450:INFO:This numbers might be useful : 81,82,0,1,9,32,25
+2019-09-01 01:23:51,450:INFO:Buffer was flush
+2019-09-01 01:23:51,450:INFO:Buffer was reseted
+2019-09-01 01:23:51,450:INFO:b'\x11\x11read,\r'was sent
+2019-09-01 01:23:51,950:INFO:This numbers might be useful : 49,84,0,1,9,32,25
+2019-09-01 01:23:51,950:INFO:Buffer was flush
+2019-09-01 01:23:51,950:INFO:Buffer was reseted
+2019-09-01 01:23:51,950:INFO:b'\x11\x11read,\r'was sent
+2019-09-01 01:23:52,451:INFO:This numbers might be useful : 17,86,0,1,9,32,25
+2019-09-01 01:23:52,451:INFO:Buffer was flush
+2019-09-01 01:23:52,451:INFO:Buffer was reseted
+2019-09-01 01:23:52,451:INFO:b'\x11\x11read,\r'was sent
+2019-09-01 01:23:52,951:INFO:This numbers might be useful : 81,87,0,1,9,32,25
+2019-09-01 01:23:52,951:INFO:Buffer was flush
+2019-09-01 01:23:52,951:INFO:Buffer was reseted
+2019-09-01 01:23:52,951:INFO:b'\x11\x11read,\r'was sent
+2019-09-01 01:23:53,452:INFO:This numbers might be useful : 49,89,0,1,9,32,25
+2019-09-01 01:23:53,452:INFO:Buffer was flush
+2019-09-01 01:23:53,452:INFO:Buffer was reseted
+2019-09-01 01:23:53,452:INFO:b'\x11\x11read,\r'was sent
+2019-09-01 01:23:53,953:INFO:This numbers might be useful : 17,1,1,1,9,32,25
+2019-09-01 01:23:53,953:INFO:Buffer was flush
+2019-09-01 01:23:53,953:INFO:Buffer was reseted
+2019-09-01 01:23:53,953:INFO:b'\x11\x11read,\r'was sent
+2019-09-01 01:23:59,443:INFO:Buffer was flush
+2019-09-01 01:23:59,443:INFO:Buffer was reseted
+2019-09-01 01:23:59,443:INFO:Get header was called on the device
+2019-09-01 01:23:59,443:INFO:b'\x11\x11head?,\r'was sent
+2019-09-01 01:23:59,944:INFO:b'\x11\x11ak,L,201394,-1.01078e+00,1.010783e+00,0,0,2019,09,01,00,51,11,1,646,\r' was read and match the pattern
+2019-09-01 01:23:59,944:INFO:Header was successfully received, its content is : L,201394,-1.01078e+00,1.010783e+00,0,0,2019,09,01,00,51,11,1,646
+2019-09-01 01:23:59,944:INFO:Filename was set to C:/Users/r/Desktop/RS232-MDS-MKV-Alec.Co/MDSMKV/save/201394__2019_9_1__0_51_11.Raw
+2019-09-01 01:23:59,944:INFO:Correct Part: 150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1,150,1
+2019-09-01 01:23:59,945:INFO:Invalid Part: 255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255
+2019-09-01 01:23:59,946:INFO:Buffer was flush
+2019-09-01 01:23:59,946:INFO:Buffer was reseted
+2019-09-01 01:23:59,946:INFO:Get header was called on the device
+2019-09-01 01:23:59,946:INFO:b'\x11\x11head?,\r'was sent
+2019-09-01 01:24:00,446:INFO:b'\x11\x11ak,L,201394,-1.01078e+00,1.010783e+00,0,0,2019,09,01,00,51,11,1,646,\r' was read and match the pattern
+2019-09-01 01:24:00,446:INFO:Header was successfully received, its content is : L,201394,-1.01078e+00,1.010783e+00,0,0,2019,09,01,00,51,11,1,646
+2019-09-01 01:24:00,446:INFO:Trying to find the end date for 645 seconds in the future
+2019-09-01 01:24:00,446:INFO:Starting date is : 2019-09-01 00:51:11
+2019-09-01 01:24:00,446:INFO:Ending date is : 2019-09-01 01:01:56
