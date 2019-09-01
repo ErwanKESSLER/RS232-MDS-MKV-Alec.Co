@@ -201,7 +201,11 @@ def ShowMainWindow():
             open_samples_window(window)
         if button == "_set_headers_":
             send_headers(window, values)
-            window.Enable()
+
+            if sys.platform.startswith('win'):
+                window.Enable()
+            else:
+                window.UnHide()
         if button == "_set_model_":
             open_model_window(window)
         if button == "_set_memory_":
@@ -300,7 +304,10 @@ def start_real_time_transfer(window):
     global exit_real_time
     if not device.sleep and device.connected and device.header.Interval != 0:
         exit_real_time = False
-        window.Disable()
+        if sys.platform.startswith('win'):
+            window.Disable()
+        else:
+            window.Hide()
         layout = [[Sg.Quit(button_color=('white', 'black')), Sg.T('', pad=(100, 0), font='Any 15', key='output', auto_size_text=True, size=(5, 1)),
                    Sg.T('', pad=(50, 0), font='Any 15', key='output2', auto_size_text=True, size=(5, 1))],
                   [Sg.Graph((500, 500), (0, 0), (500, 400), background_color='black', key='graph')], ]
@@ -345,18 +352,29 @@ def start_real_time_transfer(window):
             ShowPopUp(window, "Real time failed")
         exit_real_time = True
         window_real_time.close()
-        window.Enable()
+        if sys.platform.startswith('win'):
+            window.Enable()
+        else:
+            window.UnHide()
+
 
 
 def start_memory_transfer(window):
     global data_array, filename, FLAG_ERROR
     if not device.sleep and device.connected and device.header.Interval != 0:
-        window.Disable()
+        if sys.platform.startswith('win'):
+            window.Disable()
+        else:
+            window.Hide()
         result = SendCommand("open,", "ak,open")
         if result is None or not result:
             logging.critical("Opening the device did not work")
             ShowPopUp(window, "Opening the device did not work")
-            window.Enable()
+
+            if sys.platform.startswith('win'):
+                window.Enable()
+            else:
+                window.UnHide()
             return
         amount = device.header.Samples // 100 + 1
         logging.info("Reading for {} messages of 100 samples".format(amount))
@@ -365,7 +383,11 @@ def start_memory_transfer(window):
             if result is None or not result:
                 logging.critical("Reading didnt work")
                 ShowPopUp(window, "Reading didnt work")
-                window.Enable()
+
+                if sys.platform.startswith('win'):
+                    window.Enable()
+                else:
+                    window.UnHide()
                 return
             result = result[2:len(result) - 1]
             logging.info("This numbers might be useful : " + ",".join(map(str, result[:7])))
@@ -399,7 +421,11 @@ def start_memory_transfer(window):
             return
         write_to_file(window)
         ShowConfirmation(window, "The Data transfer was successful and the data was written to the desired file : \n{}".format(filename))
-        window.Enable()
+
+        if sys.platform.startswith('win'):
+            window.Enable()
+        else:
+            window.UnHide()
 
 
 def checkLastArray(data):
@@ -418,7 +444,10 @@ def send_headers(window, values):
     # Get Time saved on device as Hour, Minute and Seconds
     time = GetCurrentTime()
     if date is not None and time is not None:
-        window.Disable()
+        if sys.platform.startswith('win'):
+            window.Disable()
+        else:
+            window.Hide()
         date = date[7:len(date) - 2].decode()
         logging.info("Current Date was successfully received, its content is : " + str(date))
         time = time[7:len(time) - 2].decode()
@@ -478,7 +507,10 @@ def send_headers(window, values):
 def open_filename_window(window):
     global filename
     window.Disappear()
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     if not os.path.exists("./save"):
         os.makedirs("./save")
     dirname = Sg.filedialog.askdirectory(initialdir="./save", title='Please select a directory')
@@ -500,7 +532,11 @@ def open_filename_window(window):
     logging.info("Filename was set to {}".format(filename))
     window.Element("filename").Update(filename)
     window.Reappear()
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     pass
 
 
@@ -509,13 +545,19 @@ def open_delete_window(window):
                      [Sg.Button('No do not erase', key="_delete_refused_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(50, 0)),
                       Sg.Button('Yes erase', key="_delete_granted_", image_data=image_file_to_bytes(red_button, button_size), button_color=wcolor, pad=(0, 0))]]
     window_delete = Sg.Window('Erase Data', delete_layout, keep_on_top=True)
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     while True:
         button, values = window_delete.Read(timeout=100)
         if button is None:
             break
         if button == "_delete_granted_":
-            window_delete.Disable()
+            if sys.platform.startswith('win'):
+                window_delete.Disable()
+            else:
+                window_delete.Hide()
             logging.info("Data was asked to be erased")
             SendMessage("erase,")
             SendCommand("go,", "ok")
@@ -526,7 +568,11 @@ def open_delete_window(window):
             break
         if button == "_delete_refused_":
             break
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     del delete_layout, window_delete, button, values
     return
 
@@ -548,7 +594,10 @@ def open_model_window(window):
                      Sg.Text("Warning do not change those settings if you are not sure, once written, there is no way of getting back the old ones", text_color="red", font="Any 13", size=(50, 2))],
                     [Sg.Button('Validate', key="_model_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(300, 0))]]
     window_model = Sg.Window('Fill Serial Id', model_layout, keep_on_top=True)
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     while True:
         button, values = window_model.Read(timeout=100)
         if button is None:
@@ -560,7 +609,11 @@ def open_model_window(window):
             set_unvalidated(window, "_model_frame_")
             window_model.Close()
             break
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     del model_layout, window_model, button, values
     return
 
@@ -586,7 +639,10 @@ def open_start_time_window(window):
                           Sg.Text("S", size=(2, 0))],
                          [Sg.Button('Validate', key="_start_time_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(150, 0))]]
     window_start_time = Sg.Window('Fill Start Time', start_time_layout, keep_on_top=True)
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     while True:
         button, values = window_start_time.Read(timeout=10)
         if button is None:
@@ -607,7 +663,11 @@ def open_start_time_window(window):
             set_unvalidated(window, "_start_time_frame_")
             window_start_time.Close()
             break
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     del start_time_layout, window_start_time, button, values
     return
 
@@ -618,7 +678,10 @@ def open_serial_id_window(window):
                                  size=(50, 2))],
                         [Sg.Button('Validate', key="_serial_id_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(300, 0))]]
     window_serial_id = Sg.Window('Fill Serial Id', serial_id_layout, keep_on_top=True)
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     while True:
         button, values = window_serial_id.Read(timeout=100)
         if button is None:
@@ -630,7 +693,11 @@ def open_serial_id_window(window):
             set_unvalidated(window, "_serial_id_frame_")
             window_serial_id.Close()
             break
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     del serial_id_layout, window_serial_id, button, values
     return
 
@@ -660,7 +727,10 @@ def open_current_time_window(window):
                            [Sg.Button('Set to The Current Time', key="_current_time_fill_", image_data=image_file_to_bytes(blue_button, button_size), button_color=wcolor, pad=((100, 0), 0)),
                             Sg.Button('Validate', key="_current_time_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(0, 0))]]
     window_current_time = Sg.Window('Set Current Time For The Device', current_time_layout, keep_on_top=True)
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     while True:
         button, values = window_current_time.Read(timeout=10)
         if button is None:
@@ -705,7 +775,10 @@ def open_current_time_window(window):
                 set_unvalidated(window, "_start_time_frame_")
                 logging.info("Starting date was updated to : " + ", ".join(map(str, current_start_time.timetuple())))
             DisplayHeader(window)
-            window_current_time.Disable()
+            if sys.platform.startswith('win'):
+                window_current_time.Disable()
+            else:
+                window_current_time.Hide()
             if not SendMessage("date,{},{},{},".format(values["_input_interval_year_"], values["_input_interval_month_"], values["_input_interval_day_"])):
                 ShowPopUp(window, "Setting the Date on the device failed", "this is unprecedented, please check the connection")
                 header_handler(window)
@@ -717,9 +790,16 @@ def open_current_time_window(window):
             set_validated(window, "_current_date_frame_")
             break
 
-    window_current_time.Enable()
+    if sys.platform.startswith('win'):
+        window_current_time.Enable()
+    else:
+        window_current_time.UnHide()
     window_current_time.Close()
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     del current_time_layout, window_current_time, button, values
     return
 
@@ -747,7 +827,10 @@ def open_end_time_window(window):
                         Sg.Text("S", size=(2, 0))],
                        [Sg.Button('Validate', key="_end_time_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(150, 0))]]
     window_end_time = Sg.Window('Fill End Time', end_time_layout, keep_on_top=True, finalize=True)
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     while True:
         button, values = window_end_time.Read(timeout=10)
         if button is None:
@@ -790,7 +873,11 @@ def open_end_time_window(window):
             set_unvalidated(window, "_end_time_frame_")
             window_end_time.Close()
             break
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     del end_time_layout, window_end_time, button, values
     return
 
@@ -799,7 +886,10 @@ def open_interval_window(window):
     interval_layout = [[Sg.DropDown([1, 60, 120, 600], default_value=1, key="_interval_value_"), Sg.Text("Seconds")],
                        [Sg.Button('Validate', key="_interval_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(150, 0))]]
     window_interval = Sg.Window('Fill Interval Between Samples', interval_layout, keep_on_top=True)
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     while True:
         button, values = window_interval.Read(timeout=10)
         if button is None:
@@ -814,7 +904,11 @@ def open_interval_window(window):
             set_unvalidated(window, "_end_time_frame_")
             window_interval.Close()
             break
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     del interval_layout, window_interval, button, values
     return
 
@@ -825,7 +919,10 @@ def open_samples_window(window):
                       Sg.Text("samples\n (limited to " + str(MAX_SAMPLES) + ")", size=(30, 0))],
                      [Sg.Button('Validate', key="_samples_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(150, 0))]]
     window_sample = Sg.Window('Fill Number of Samples', sample_layout, keep_on_top=True)
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     while True:
         button, values = window_sample.Read(timeout=10)
         if button is None:
@@ -839,7 +936,11 @@ def open_samples_window(window):
             set_unvalidated(window, "_samples_frame_")
             window_sample.Close()
             break
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     del sample_layout, window_sample, button, values
     return
 
@@ -852,7 +953,10 @@ def open_coefficient_window(window):
                           [Sg.Button('Validate', key="_coefficent_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(150, 0))]]
 
     window_coefficent = Sg.Window('Fill Coefficients', coefficient_layout, keep_on_top=True)
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     while True:
 
         button, values = window_coefficent.Read(timeout=100)
@@ -872,7 +976,11 @@ def open_coefficient_window(window):
             set_unvalidated(window, "_coefficients_frame_")
             window_coefficent.Close()
             break
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
     del coefficient_layout, window_coefficent, button, values
     return
 
@@ -1000,17 +1108,31 @@ def header_handler(window):
 
 
 def ShowPopUp(window, *args):
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     Sg.Popup(*args, title="Error Pop Up", button_color=("blue", "white"), background_color="red", text_color="white", button_type=0, auto_close=False, line_width=60,
              no_titlebar=True, grab_anywhere=True, keep_on_top=True)
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
 
 
 def ShowConfirmation(window, *args):
-    window.Disable()
+    if sys.platform.startswith('win'):
+        window.Disable()
+    else:
+        window.Hide()
     Sg.Popup(*args, title="Confirmation Pop Up", button_color=("blue", "white"), background_color="green", text_color="blue", button_type=0, auto_close=False, line_width=60,
              no_titlebar=True, grab_anywhere=True, keep_on_top=True)
-    window.Enable()
+
+    if sys.platform.startswith('win'):
+        window.Enable()
+    else:
+        window.UnHide()
 
 
 def sleep_handler(window, values):
