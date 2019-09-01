@@ -1,6 +1,7 @@
 RS232-MDS-MKV-Alec.Co
 
--For general running
+For general running:
+
 -Install Python 3.7+
 -Install Tk on linux (pacman -S tk or apt-get install tk)
 -Do pip install -r requirements.txt at the root
