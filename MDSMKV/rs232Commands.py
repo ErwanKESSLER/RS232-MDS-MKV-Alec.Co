@@ -98,6 +98,38 @@ def SendCommand(msg, ak):
     return device.serial_device
 
 
+def sendRead(msg, retry):
+    global device
+    flushEverything()
+    if device.serial_device is not None and not device.sleep and device.connected:
+        device.serial_device.write(encodeMessage(msg))
+        time.sleep(0.5)
+        device.serial_device.flush()
+        bits = device.serial_device.in_waiting
+        if bits:
+            result = device.serial_device.read(bits)
+            l = []
+            for el in result:
+                l.append(int(el))
+            return l
+        else:
+            for i in range(5):
+                logging.critical("retry " + str(i + 1) + "/5")
+                device.serial_device.write(encodeMessage(retry))
+                time.sleep(0.5)
+                device.serial_device.flush()
+                bits = device.serial_device.in_waiting
+                if bits:
+                    result = device.serial_device.read(bits)
+                    l = []
+                    for el in result:
+                        l.append(int(el))
+                    return l
+                else:
+                    logging.critical("failed " + str(i + 1) + "/5")
+    return None
+
+
 def checkReadWithMessage(msg):
     time.sleep(0.5)
     device.serial_device.flush()
@@ -106,7 +138,7 @@ def checkReadWithMessage(msg):
         bits = device.serial_device.in_waiting
         if bits:
             result = device.serial_device.read(bits)
-            if result[0:(3 + len(msg))-(1 if msg=="" else 0)] == b'\x11\x11' + msg.encode() + (b',' if msg != "" else b''):
+            if result[0:(3 + len(msg)) - (1 if msg == "" else 0)] == b'\x11\x11' + msg.encode() + (b',' if msg != "" else b''):
                 logging.info(str(result) + " was read and match the pattern")
                 return result
             else:
@@ -229,5 +261,5 @@ def Disconnect():
     global device
     if device.serial_device is not None:
         device.serial_device.close()
-        ser = None
+        device.serial_device = None
     return isOpen()
