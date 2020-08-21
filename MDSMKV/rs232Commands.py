@@ -1,4 +1,6 @@
-import logging, serial, time
+import logging
+import serial
+import time
 
 
 class Header:

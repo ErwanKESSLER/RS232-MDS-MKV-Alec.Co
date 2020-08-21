@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-import logging
-import sys
-import logging.handlers as handlers
-import PySimpleGUI as Sg
 import datetime
+import logging
+import logging.handlers as handlers
+import os
+import sys
 from threading import Thread
+
+import PySimpleGUI as Sg
+
+from rs232Commands import Header, Disconnect, Connect, Sleep, WakeUp, GetHeader, device, GetCurrentDate, GetCurrentTime, SendMessage, SendCommand, encodeMessage, checkReadWithMessage, sendRead
 from utils import serial_ports, image_file_to_bytes, green_button, blue_button, red_button, calculateFutureDate, validateDate, getMonthDays
-from rs232Commands import Header,Disconnect, Connect, Sleep, WakeUp, GetHeader, device, GetCurrentDate, GetCurrentTime, SendMessage, SendCommand, encodeMessage, checkReadWithMessage, sendRead
 
 # This limit is an hard limit for Alec Co device, if yours doesnt have it, please change it
 MAX_SAMPLES = 512000
@@ -23,7 +26,6 @@ default_size_half = (default_size[0] // 2, 1)
 button_size = (150, 50)
 current_data_value, current_data_value2, exit_real_time = 0, 0, False
 data_array = []
-import os
 
 if not os.path.exists("./log"):
     os.makedirs("./log")
@@ -57,7 +59,8 @@ def ShowMainWindow():
     Sg.ChangeLookAndFeel('DarkTanBlue')
     Sg.SetOptions(auto_size_buttons=False, border_width=0, button_color=Sg.COLOR_SYSTEM_DEFAULT, input_elements_background_color="#596470")
     # ----=== Device part ===-------
-    device_selection = [[Sg.Combo(values=serial_ports(), key='_portList_', size=default_size_half),
+    ports=serial_ports()
+    device_selection = [[Sg.Combo(ports,default_value=ports[0] if len(ports) else None, key='_portList_', size=default_size_half),
                          Sg.VSep(pad=(10, 0)),
                          Sg.Button('Connect', image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, font='Any 15', pad=(0, 0), key='_connect_', size=default_size_half)]]
 
@@ -169,11 +172,12 @@ def ShowMainWindow():
                            "Header are unset, toggling off the buttons",
                            '_set_coefficients_', "_set_serial_id_", "_set_model_", "_set_start_time_", "_set_samples_", "_set_interval_",
                            "_set_end_time_", "_set_headers_", "_set_current_date_", "_set_real_time_", "_set_memory_", '_DELETE_')
-            toggle_buttons(window,False,"Not enabled","Not enabled","_show_graph_","_show_table_")
+            toggle_buttons(window, False, "Not enabled", "Not enabled", "_show_graph_", "_show_table_")
             window.Element("filename").Update(filename)
             flag_change = False
         button, values = window.Read(timeout=100)
-        window.Element("_portList_").Update(values=serial_ports())
+        ports=serial_ports()
+       # window.Element("_portList_").Update(values=ports)
         if button is None:
             break  # exit button clicked
         else:
@@ -356,7 +360,6 @@ def start_real_time_transfer(window):
             window.Enable()
         else:
             window.UnHide()
-
 
 
 def start_memory_transfer(window):
@@ -1030,11 +1033,11 @@ def DisplayHeader(window):
 
 
 def connect_handler(window, values):
-    global flag_change,filename
+    global flag_change, filename
     logging.info("Starting a connection session")
     if device.connected:
         if not device.sleep:
-            sleep_handler(window,values)
+            sleep_handler(window, values)
 
         result = Disconnect()
         if result is None or not result:
@@ -1053,8 +1056,8 @@ def connect_handler(window, values):
             window.Element('_device_connection_').TKFrame.configure(text='Device Connection (ON)')
             set_validated(window, "_device_connection_")
             logging.info("Device was connected and the color has been set to red")
-            filename=""
-            device.header=Header()
+            filename = ""
+            device.header = Header()
             DisplayHeader(window)
             device.connected = not device.connected
         else:

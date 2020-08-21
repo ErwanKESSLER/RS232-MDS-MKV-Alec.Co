@@ -1,6 +1,13 @@
-import serial, glob, sys, io, base64, datetime, logging
-from PIL import Image
+import base64
+import datetime
+import glob
+import io
+import logging
+import sys
 from calendar import monthrange
+
+import serial
+from PIL import Image
 
 
 def serial_ports():
@@ -71,12 +78,15 @@ def validateDate(year, month, day, hour, minute, second):
         second = 0
     return year, month, day, hour, minute, second
 
-def getMonthDays(year,month):
+
+def getMonthDays(year, month):
     if year is None:
-        year=1
+        year = 1
     if month is None:
-        month=1
-    return monthrange(year,month)[1]
+        month = 1
+    return monthrange(year, month)[1]
+
+
 # To convert your PNG into Base 64:
 #   Go to https://www.base64-image.de/
 #   Drag and drop your PNG image onto the webpage
