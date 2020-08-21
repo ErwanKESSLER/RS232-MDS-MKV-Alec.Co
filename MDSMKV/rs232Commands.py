@@ -35,16 +35,27 @@ device = Device()
 def flushEverything():
     if device.serial_device is None or device.sleep or not device.connected:
         logging.critical("The device is not usable and cannot be flushed")
-        return
+        return False
     device.serial_device.flush()
     logging.info("Buffer was flush")
     while device.serial_device.in_waiting:
-        logging.info(str(device.serial_device.read(1)) + " was in the reading buffer")
+        buf = ""
+        try:
+            buf=device.serial_device.read(1)
+        except serial.SerialTimeoutException:
+            return False
+        logging.info(str(buf)+ " was in the reading buffer")
     while device.serial_device.out_waiting:
-        logging.info(str(device.serial_device.write(1)) + " was in the writing buffer")
+        buf=""
+        try:
+            buf=device.serial_device.write(1)
+        except serial.SerialTimeoutException:
+            return False
+        logging.info(str(buf) + " was in the writing buffer")
     device.serial_device.reset_input_buffer()
     device.serial_device.reset_output_buffer()
     logging.info("Buffer was reseted")
+    return True
 
 
 def encodeMessage(data):
@@ -65,11 +76,17 @@ def SendMessage(msg):
     flushEverything()
     if device.serial_device is not None and not device.sleep and device.connected:
         logging.info("Send message was called on the device with : " + msg)
-        device.serial_device.write(encodeMessage(msg))
+        try:
+            device.serial_device.write(encodeMessage(msg))
+        except serial.SerialTimeoutException:
+            return False
         if checkReadWithMessage('ak'):
             time.sleep(0.5)
             logging.info("Message {} was acknowledged".format(msg))
-            device.serial_device.write(encodeMessage("go,"))
+            try:
+                device.serial_device.write(encodeMessage("go,"))
+            except serial.SerialTimeoutException:
+                return False
             time.sleep(0.5)
             if checkReadWithMessage('ok'):
                 logging.info("Device started the command")
@@ -88,7 +105,10 @@ def SendCommand(msg, ak):
     flushEverything()
     if device.serial_device is not None and not device.sleep and device.connected:
         logging.info("Send command was called on the device with : " + msg)
-        device.serial_device.write(encodeMessage(msg))
+        try:
+            device.serial_device.write(encodeMessage(msg))
+        except serial.SerialTimeoutException:
+            return False
         result = checkReadWithMessage(ak)
         if result:
             logging.info("Command {} was acknowledged with : {}".format(msg, result))
@@ -104,12 +124,18 @@ def sendRead(msg, retry):
     global device
     flushEverything()
     if device.serial_device is not None and not device.sleep and device.connected:
-        device.serial_device.write(encodeMessage(msg))
+        try:
+            device.serial_device.write(encodeMessage(msg))
+        except serial.SerialTimeoutException:
+            return False
         time.sleep(0.5)
         device.serial_device.flush()
         bits = device.serial_device.in_waiting
         if bits:
-            result = device.serial_device.read(bits)
+            try:
+                result = device.serial_device.read(bits)
+            except serial.SerialTimeoutException:
+                return False
             l = []
             for el in result:
                 l.append(int(el))
@@ -117,12 +143,18 @@ def sendRead(msg, retry):
         else:
             for i in range(5):
                 logging.critical("retry " + str(i + 1) + "/5")
-                device.serial_device.write(encodeMessage(retry))
+                try:
+                    device.serial_device.write(encodeMessage(retry))
+                except serial.SerialTimeoutException:
+                    return False
                 time.sleep(0.5)
                 device.serial_device.flush()
                 bits = device.serial_device.in_waiting
                 if bits:
-                    result = device.serial_device.read(bits)
+                    try:
+                        result = device.serial_device.read(bits)
+                    except serial.SerialTimeoutException:
+                        return False
                     l = []
                     for el in result:
                         l.append(int(el))
@@ -139,7 +171,10 @@ def checkReadWithMessage(msg):
     while count:
         bits = device.serial_device.in_waiting
         if bits:
-            result = device.serial_device.read(bits)
+            try:
+                result = device.serial_device.read(bits)
+            except serial.SerialTimeoutException:
+                return False
             if result[0:(3 + len(msg)) - (1 if msg == "" else 0)] == b'\x11\x11' + msg.encode() + (b',' if msg != "" else b''):
                 logging.info(str(result) + " was read and match the pattern")
                 return result
@@ -162,7 +197,10 @@ def checkRead(data_check):
     while count:
         bits = device.serial_device.in_waiting
         if bits:
-            result = device.serial_device.read(bits)
+            try:
+                result = device.serial_device.read(bits)
+            except serial.SerialTimeoutException:
+                return False
             if isMatch(result, data_check):
                 logging.info(str(result) + " was read and matched the confirmation: " + data_check)
                 return True
@@ -182,7 +220,10 @@ def WakeUp():
     flushEverything()
     if device.serial_device is not None:
         logging.info("Wake up was called on the device")
-        device.serial_device.write(encodeMessage("AA"))
+        try:
+            device.serial_device.write(encodeMessage("AA"))
+        except serial.SerialTimeoutException:
+            return False
         return checkRead("er,AA")
     return device.serial_device
 
@@ -192,7 +233,10 @@ def Sleep():
     flushEverything()
     if device.serial_device is not None:
         logging.info("Sleep was called on the device")
-        device.serial_device.write(encodeMessage("exit,"))
+        try:
+            device.serial_device.write(encodeMessage("exit,"))
+        except serial.SerialTimeoutException:
+            return False
         return checkRead("ak,exit,")
     return device.serial_device
 
@@ -202,7 +246,10 @@ def GetHeader():
     flushEverything()
     if device.serial_device is not None and not device.sleep and device.connected:
         logging.info("Get header was called on the device")
-        device.serial_device.write(encodeMessage("head?,"))
+        try:
+            device.serial_device.write(encodeMessage("head?,"))
+        except serial.SerialTimeoutException:
+            return False
         return checkReadWithMessage('ak')
     logging.critical("Get header was called but the device is asleep or not connected")
     return device.serial_device
@@ -213,7 +260,10 @@ def GetCurrentDate():
     flushEverything()
     if device.serial_device is not None and not device.sleep and device.connected:
         logging.info("Get Current Date was called on the device")
-        device.serial_device.write(encodeMessage("date?,"))
+        try:
+            device.serial_device.write(encodeMessage("date?,"))
+        except serial.SerialTimeoutException:
+            return False
         return checkReadWithMessage('date')
     logging.critical("Get Current Date was called but the device is asleep or not connected")
     return device.serial_device
@@ -224,7 +274,10 @@ def GetCurrentTime():
     flushEverything()
     if device.serial_device is not None and not device.sleep and device.connected:
         logging.info("Get Current Time was called on the device")
-        device.serial_device.write(encodeMessage("time?,"))
+        try:
+            device.serial_device.write(encodeMessage("time?,"))
+        except serial.SerialTimeoutException:
+            return False
         return checkReadWithMessage('time')
     logging.critical("Get Current Time was called but the device is asleep or not connected")
     return device.serial_device
@@ -249,7 +302,8 @@ def Connect(com_port):
                 parity=serial.PARITY_NONE,
                 stopbits=serial.STOPBITS_ONE,
                 dsrdtr=True,
-                rtscts=True
+                rtscts=True,
+                writeTimeout=5
             )
 
         except serial.SerialException:
