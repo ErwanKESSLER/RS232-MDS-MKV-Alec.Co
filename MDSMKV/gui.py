@@ -178,7 +178,7 @@ def ShowMainWindow():
         button, values = window.Read(timeout=100)
         ports = serial_ports()
         window.Element("_portList_").Update(values=ports)
-        if values["_portList_"] not in ports:
+        if values["_portList_"] not in ports and not device.connected:
             if not move_flag:
                 old_x, old_y = window.CurrentLocation()
                 window.Move(x=old_x + 10, y=old_y)
