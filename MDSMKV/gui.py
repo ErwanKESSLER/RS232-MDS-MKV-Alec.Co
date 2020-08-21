@@ -57,10 +57,10 @@ logger.addHandler(errorLogHandler)
 def ShowMainWindow():
     global flag_change
     Sg.ChangeLookAndFeel('DarkTanBlue')
-    Sg.SetOptions(auto_size_buttons=False, border_width=0, button_color=Sg.COLOR_SYSTEM_DEFAULT, input_elements_background_color="#596470")
+    Sg.SetOptions(auto_size_buttons=False, border_width=0, input_elements_background_color="#596470")
     # ----=== Device part ===-------
-    ports=serial_ports()
-    device_selection = [[Sg.Combo(ports,default_value=ports[0] if len(ports) else None, key='_portList_', size=default_size_half),
+    ports = serial_ports()
+    device_selection = [[Sg.Combo(ports, default_value=ports[0] if len(ports) else None, key='_portList_', size=default_size_half),
                          Sg.VSep(pad=(10, 0)),
                          Sg.Button('Connect', image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, font='Any 15', pad=(0, 0), key='_connect_', size=default_size_half)]]
 
@@ -159,7 +159,7 @@ def ShowMainWindow():
                        background_color=bcolor).Layout(layout).Finalize()
 
     # ---===--- Loop taking in user input --- #
-
+    move_flag = 0
     while True:
         if flag_change:
             toggle_buttons(window, device.connected, "Device is connected, toggling on the buttons", "Device is disconnected, toggling off the buttons",
@@ -176,8 +176,22 @@ def ShowMainWindow():
             window.Element("filename").Update(filename)
             flag_change = False
         button, values = window.Read(timeout=100)
-        ports=serial_ports()
-       # window.Element("_portList_").Update(values=ports)
+        ports = serial_ports()
+        window.Element("_portList_").Update(values=ports)
+        if values["_portList_"] not in ports:
+            if not move_flag:
+                old_x, old_y = window.CurrentLocation()
+                window.Move(x=old_x + 10, y=old_y)
+                window.Read(timeout=100)
+                window.Move(x=old_x-10, y=old_y)
+                window.Read(timeout=100)
+                window.Move(x=old_x, y=old_y)
+                move_flag = 50
+            else:
+                move_flag -= 1
+            window.set_title("Alec Light Intensity (INCORRECT PORT)")
+        else:
+            window.set_title("Alec Light Intensity")
         if button is None:
             break  # exit button clicked
         else:
