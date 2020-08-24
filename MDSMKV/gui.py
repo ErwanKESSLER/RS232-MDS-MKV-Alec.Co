@@ -1089,6 +1089,7 @@ def header_handler(window):
             logging.info("Header was successfully received, its content is : " + str(result))
             result = result.split(',')
             device.header.Model, device.header.SerialId, device.header.Coeff1, device.header.Coeff2, device.header.Coeff3, device.header.Coeff4 = result[:6]
+            # for the big one the result there is more than 4 coefficients so you need to switch here the 6
             year, month, day, hour, minute, second, device.header.Interval, device.header.Samples = map(int, result[6:])
             device.header.Year, device.header.Month, device.header.Day, device.header.Hour, device.header.Minute, device.header.Second = validateDate(year, month, day, hour, minute, second)
         else:
