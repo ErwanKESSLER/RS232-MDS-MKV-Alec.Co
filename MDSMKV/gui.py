@@ -297,6 +297,7 @@ def write_to_file(window):
         result = result[5:len(result) - 2].decode()
         logging.info("Header was successfully received, its content is : " + str(result))
         result = result.split(',')
+        # 2 at the beginning
         device.header.Model, device.header.SerialId = result[:2]
         for i in range(device.header.NumberCoefficients):
             try:
@@ -307,6 +308,7 @@ def write_to_file(window):
                 return
                 # for the big one the result there is more than 4 coefficients so you need to switch here the 6
         try:
+            # 8 elements left
             year, month, day, hour, minute, second, device.header.Interval, device.header.Samples = map(int, result[2 + device.header.NumberCoefficients:])
         except Exception:
             logging.critical("The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
@@ -1027,7 +1029,7 @@ def open_coefficient_window(window):
         if button == "_coefficent_filled_":
             for i in range(device.header.NumberCoefficients):
                 device.header.Coefficients[i]=values['_input_coeff{}_'.format(i)] if values['_input_coeff{}_'.format(i)] else None
-            logging.info("Coefficients were changed to : "+device.header.Coefficients)
+            logging.info("Coefficients were changed to : "+",".join(device.header.Coefficients))
             DisplayHeader(window)
             set_unvalidated(window, "_coefficients_frame_")
             window_coefficent.Close()
