@@ -188,7 +188,7 @@ def ShowMainWindow():
         ports = serial_ports()
         window.Element("_portList_").Update(values=ports)
         if values["_portList_"] not in ports and not device.connected:
-            if not move_flag:
+            if not move_flag and False: # enable that for the annoying jitter
                 old_x, old_y = window.CurrentLocation()
                 window.Move(x=old_x + 10, y=old_y)
                 window.Read(timeout=100)
@@ -937,7 +937,7 @@ def open_end_time_window(window):
 
 
 def open_interval_window(window):
-    interval_layout = [[Sg.DropDown([1, 60, 120, 600], default_value=1, key="_interval_value_"), Sg.Text("Seconds")],
+    interval_layout = [[Sg.Combo([1, 60, 120, 600], default_value=1, key="_interval_value_"), Sg.Text("Seconds")],
                        [Sg.Button('Validate', key="_interval_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(150, 0))]]
     window_interval = Sg.Window('Fill Interval Between Samples', interval_layout, keep_on_top=True)
     if sys.platform.startswith('win'):
