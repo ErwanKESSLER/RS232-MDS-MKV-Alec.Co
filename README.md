@@ -5,7 +5,7 @@ For general use:
 
 On Windows: 
 
-(- Install the drivers: https://www.ugreen.com/drivers/list-USB_To_RS232_Driver-en.html) (optional try first the release)
+(- Install the drivers (for win10 1804+ make sure to install prolific 3.8.28.0 or below driver else it will not work) : https://www.ugreen.com/drivers/list-USB_To_RS232_Driver-en.html) (optional try first the release)
 
 - Go in the release : https://github.com/ErwanKESSLER/RS232-MDS-MKV-Alec.Co/releases/tag/0.1win and execute the .exe (if not working please build from the sources you will need python 3.7 from their site and then from (1) steps in the HOW TO)
 
