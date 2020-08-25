@@ -6,10 +6,8 @@ import time
 class Header:
     Model = None
     SerialId = None
-    Coeff1 = None
-    Coeff2 = None
-    Coeff3 = None
-    Coeff4 = None
+    Coefficients=[0.0,0.0,0.0,0.0]
+    NumberCoefficients=4
     Year = None
     Month = None
     Day = None

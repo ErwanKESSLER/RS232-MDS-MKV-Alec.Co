@@ -74,7 +74,13 @@ def ShowMainWindow():
     # ------=== Headers Fields ===------
 
     serial_id = Sg.Text(device.header.SerialId, key="_serialID_", size=default_size_half)
-    coefficients = [Sg.Text("{} {}\n{} {}".format(device.header.Coeff1, device.header.Coeff2, device.header.Coeff3, device.header.Coeff4), key="_coefficients_", size=default_size_double)]
+    _coeff_str = ""
+    for i in range(0, device.header.NumberCoefficients - 1, 2):
+        _coeff_str += str(device.header.Coefficients[i]) + " " + str(device.header.Coefficients[i + 1]) + "\n"
+    # if odd add the last one on the a new line
+    if device.header.NumberCoefficients % 2 == 1:
+        _coeff_str += str(device.header.Coefficients[device.header.NumberCoefficients - 1])
+    coefficients = [Sg.Text(_coeff_str, key="_coefficients_", size=default_size_double)]
     starting_date = Sg.Text("{}/{}/{} {}:{}:{}".format(device.header.Year, device.header.Month, device.header.Day, device.header.Hour, device.header.Minute, device.header.Second),
                             key="_starting_date_", size=default_size_half)
     model = Sg.Text(device.header.Model, key="_model_", size=default_size_half)
@@ -85,7 +91,10 @@ def ShowMainWindow():
     current_date = Sg.Text("{}/{}/{} {}:{}:{}".format(None, None, None, None, None, None), key="_current_date_", size=default_size_half)
     # -----==== Buttons Part ===------
     set_coefficients = [Sg.Button('Set Coefficients', image_data=image_file_to_bytes(blue_button, button_size),
-                                  button_color=wcolor, font='Any 10', pad=(122, 7), key='_set_coefficients_')]
+                                  button_color=wcolor, font='Any 10', pad=(23, 7), key='_set_coefficients_'),
+                        Sg.VSep(pad=(5, 0)),
+                        Sg.Button('4 coefficients', image_data=image_file_to_bytes(blue_button, button_size),
+                                  button_color=wcolor, font='Any 10', pad=(23, 7), key='_number_coefficients_')]
     set_serial_id = Sg.Button('Set Serial Id', image_data=image_file_to_bytes(blue_button, button_size),
                               button_color=wcolor, font='Any 15', pad=((23, 23), 0), key='_set_serial_id_', size=default_size)
     set_model = Sg.Button('Set Model', image_data=image_file_to_bytes(blue_button, button_size),
@@ -183,7 +192,7 @@ def ShowMainWindow():
                 old_x, old_y = window.CurrentLocation()
                 window.Move(x=old_x + 10, y=old_y)
                 window.Read(timeout=100)
-                window.Move(x=old_x-10, y=old_y)
+                window.Move(x=old_x - 10, y=old_y)
                 window.Read(timeout=100)
                 window.Move(x=old_x, y=old_y)
                 move_flag = 50
@@ -234,6 +243,8 @@ def ShowMainWindow():
             open_delete_window(window)
         if button == "_set_filename_":
             open_filename_window(window)
+        if button == "_number_coefficients_":
+            coefficient_handler(window)
         # Refresh Current Date
         if device.header.currentDate is not None:
             device.header.currentDate = device.header.currentDate + (datetime.datetime.now() - device.header.dateTimeNow)
@@ -286,8 +297,21 @@ def write_to_file(window):
         result = result[5:len(result) - 2].decode()
         logging.info("Header was successfully received, its content is : " + str(result))
         result = result.split(',')
-        device.header.Model, device.header.SerialId, device.header.Coeff1, device.header.Coeff2, device.header.Coeff3, device.header.Coeff4 = result[:6]
-        year, month, day, hour, minute, second, device.header.Interval, device.header.Samples = map(int, result[6:])
+        device.header.Model, device.header.SerialId = result[:2]
+        for i in range(device.header.NumberCoefficients):
+            try:
+                device.header.Coefficients[i] = float(result[i + 2])
+            except Exception:
+                logging.critical("The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                ShowPopUp(window, "The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                return
+                # for the big one the result there is more than 4 coefficients so you need to switch here the 6
+        try:
+            year, month, day, hour, minute, second, device.header.Interval, device.header.Samples = map(int, result[2 + device.header.NumberCoefficients:])
+        except Exception:
+            logging.critical("The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+            ShowPopUp(window, "The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+            return
     else:
         logging.critical("Header failed")
         ShowPopUp(window, "No file were written, header failed")
@@ -306,7 +330,11 @@ def write_to_file(window):
                                                   device.header.currentDate.hour, device.header.currentDate.minute, device.header.currentDate.second))
     f.write('Samples={}\n'.format(device.header.Samples))
     f.write("\n[Coef]\n")
-    f.write("{},{},{},{}\n".format(device.header.Coeff1, device.header.Coeff2, device.header.Coeff3, device.header.Coeff4))
+    _coeff_str = ""
+    for i in range(0, device.header.NumberCoefficients):
+        _coeff_str += str(device.header.Coefficients[i]) + " "
+    _coeff_str += "\n"
+    f.write(_coeff_str)
     f.write("\n[Item]\n")
     delta = datetime.timedelta(seconds=device.header.Interval)
     for i in range(device.header.Samples):
@@ -482,22 +510,16 @@ def send_headers(window, values):
             logging.critical("Interval was not set, please set one")
             ShowPopUp(window, "Interval was not set, please set one, Aborted")
             return
-
+        _header_msg = "write,{},{},".format(device.header.Model, device.header.SerialId)
+        for i in range(device.header.NumberCoefficients):
+            _header_msg+=device.header.Coefficients[i]+","
+        _header_msg += "{},{},{},{},{},{},{},{},".format(str(device.header.Year).rjust(4, '0'), str(device.header.Month).rjust(2, '0'), str(device.header.Day).rjust(2, '0'),
+                                                         str(device.header.Hour).rjust(2, '0'), str(device.header.Minute).rjust(2, '0'),str(device.header.Second).rjust(2, '0'), device.header.Interval, 0)
         # print(SendMessage("write,L,201394,-1.01078e+00,1.010783e+00,0,0,0000,00,00,00,00,00,0,0,"))
-        result = SendMessage("write,{},{},{},{},{},{},{},{},{},{},{},{},{},{},".format(device.header.Model, device.header.SerialId, device.header.Coeff1,
-                                                                                       device.header.Coeff2, device.header.Coeff3, device.header.Coeff4, str(device.header.Year).rjust(4, '0'),
-                                                                                       str(device.header.Month).rjust(2, '0'), str(device.header.Day).rjust(2, '0')
-                                                                                       , str(device.header.Hour).rjust(2, '0'), str(device.header.Minute).rjust(2, '0'),
-                                                                                       str(device.header.Second).rjust(2, '0'), device.header.Interval, 0))
+        result = SendMessage(_header_msg)
         if result is None or not result:
             logging.critical("Set header sequence failed, aborting")
-            ShowPopUp(window, "Set header sequence failed, aborting ", "{},{},{},{},{},{},{},{},{},{},{},{},{},{},".format(str(device.header.Model), device.header.SerialId, device.header.Coeff1,
-                                                                                                                           device.header.Coeff2, device.header.Coeff3, device.header.Coeff4,
-                                                                                                                           str(device.header.Year).rjust(4, '0'),
-                                                                                                                           str(device.header.Month).rjust(2, '0'), str(device.header.Day).rjust(2, '0')
-                                                                                                                           , str(device.header.Hour).rjust(2, '0'),
-                                                                                                                           str(device.header.Minute).rjust(2, '0'),
-                                                                                                                           str(device.header.Second).rjust(2, '0'), device.header.Interval, 0))
+            ShowPopUp(window, "Set header sequence failed, aborting ", _header_msg)
             return
         result = SendMessage("start,{},{},{},{},{},{},{},".format(str(device.header.Year).rjust(4, '0'), str(device.header.Month).rjust(2, '0'), str(device.header.Day).rjust(2, '0')
                                                                   , str(device.header.Hour).rjust(2, '0'), str(device.header.Minute).rjust(2, '0'), str(device.header.Second).rjust(2, '0')
@@ -539,8 +561,21 @@ def open_filename_window(window):
             result = result[5:len(result) - 2].decode()
             logging.info("Header was successfully received, its content is : " + str(result))
             result = result.split(',')
-            device.header.Model, device.header.SerialId, device.header.Coeff1, device.header.Coeff2, device.header.Coeff3, device.header.Coeff4 = result[:6]
-            year, month, day, hour, minute, second, device.header.Interval, device.header.Samples = map(int, result[6:])
+            device.header.Model, device.header.SerialId = result[:2]
+            for i in range(device.header.NumberCoefficients):
+                try:
+                    device.header.Coefficients[i] = float(result[i + 2])
+                except Exception:
+                    logging.critical("The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                    ShowPopUp(window, "The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                    return
+                    # for the big one the result there is more than 4 coefficients so you need to switch here the 6
+            try:
+                year, month, day, hour, minute, second, device.header.Interval, device.header.Samples = map(int, result[2 + device.header.NumberCoefficients:])
+            except Exception:
+                logging.critical("The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                ShowPopUp(window, "The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                return
         else:
             logging.critical("Header failed on file selection")
             ShowPopUp(window, "Header failed on file selection")
@@ -963,11 +998,17 @@ def open_samples_window(window):
 
 
 def open_coefficient_window(window):
-    coefficient_layout = [[Sg.Input(do_not_clear=True, enable_events=True, key='_input_coeff1_', default_text=device.header.Coeff1, size=default_size),
-                           Sg.Input(do_not_clear=True, enable_events=True, key='_input_coeff2_', default_text=device.header.Coeff2, size=default_size)],
-                          [Sg.Input(do_not_clear=True, enable_events=True, key='_input_coeff3_', default_text=device.header.Coeff3, size=default_size),
-                           Sg.Input(do_not_clear=True, enable_events=True, key='_input_coeff4_', default_text=device.header.Coeff4, size=default_size)],
-                          [Sg.Button('Validate', key="_coefficent_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(150, 0))]]
+    coefficient_layout =[[],[]]
+    maxi = device.header.NumberCoefficients // 2
+    if device.header.NumberCoefficients % 2 == 1:
+        maxi = device.header.NumberCoefficients // 2 + 1
+
+    for i in range(0, maxi):
+        coefficient_layout[0].append(Sg.Input(do_not_clear=True, enable_events=True, key='_input_coeff{}_'.format(i), default_text=device.header.Coefficients[i], size=default_size))
+    for i in range(maxi,device.header.NumberCoefficients):
+        coefficient_layout[1].append(Sg.Input(do_not_clear=True, enable_events=True, key='_input_coeff{}_'.format(i), default_text=device.header.Coefficients[i], size=default_size))
+
+    coefficient_layout.append([Sg.Button('Validate', key="_coefficent_filled_", image_data=image_file_to_bytes(green_button, button_size), button_color=wcolor, pad=(150, 0))])
 
     window_coefficent = Sg.Window('Fill Coefficients', coefficient_layout, keep_on_top=True)
     if sys.platform.startswith('win'):
@@ -979,16 +1020,14 @@ def open_coefficient_window(window):
         button, values = window_coefficent.Read(timeout=100)
         if button is None:
             break
-        for i in range(1, 5):
+        for i in range(0,device.header.NumberCoefficients):
             key = '_input_coeff{}_'.format(i)
             if len(values[key]) and values[key][-1] not in ('0123456789.eE-'):  # if last char entered not a digit
                 window_coefficent.Element(key).Update(values[key][:-1])  # delete last char from input
         if button == "_coefficent_filled_":
-            device.header.Coeff1 = values['_input_coeff1_'] if values['_input_coeff1_'] else None
-            device.header.Coeff2 = values['_input_coeff2_'] if values['_input_coeff2_'] else None
-            device.header.Coeff3 = values['_input_coeff3_'] if values['_input_coeff3_'] else None
-            device.header.Coeff4 = values['_input_coeff4_'] if values['_input_coeff4_'] else None
-            logging.info("Coefficients were changed to : {} {} {} {}".format(device.header.Coeff1, device.header.Coeff2, device.header.Coeff3, device.header.Coeff4))
+            for i in range(device.header.NumberCoefficients):
+                device.header.Coefficients[i]=values['_input_coeff{}_'.format(i)] if values['_input_coeff{}_'.format(i)] else None
+            logging.info("Coefficients were changed to : "+device.header.Coefficients)
             DisplayHeader(window)
             set_unvalidated(window, "_coefficients_frame_")
             window_coefficent.Close()
@@ -1031,7 +1070,16 @@ def toggle_buttons(window, flag, up_message, down_message, *button_keys):
 
 def DisplayHeader(window):
     window.Element('_serialID_').Update(device.header.SerialId)
-    window.Element('_coefficients_').Update("{} {}\n{} {}".format(device.header.Coeff1, device.header.Coeff2, device.header.Coeff3, device.header.Coeff4))
+    _coeff_str = ""
+    maxi = device.header.NumberCoefficients // 2
+    if device.header.NumberCoefficients % 2 == 1:
+        maxi = device.header.NumberCoefficients // 2 + 1
+    for i in range(0, maxi):
+        _coeff_str += str(device.header.Coefficients[i]) + " "
+    _coeff_str += "\n"
+    for i in range(maxi, device.header.NumberCoefficients):
+        _coeff_str += str(device.header.Coefficients[i]) + " "
+    window.Element('_coefficients_').Update(_coeff_str)
     window.Element('_starting_date_').Update("{}/{}/{} {}:{}:{}".format(device.header.Year, device.header.Month, device.header.Day, device.header.Hour, device.header.Minute, device.header.Second))
     window.Element('_model_').Update(device.header.Model)
     window.Element('_sample_').Update(device.header.Samples)
@@ -1088,15 +1136,28 @@ def header_handler(window):
             result = result[5:len(result) - 2].decode()
             logging.info("Header was successfully received, its content is : " + str(result))
             result = result.split(',')
-            device.header.Model, device.header.SerialId, device.header.Coeff1, device.header.Coeff2, device.header.Coeff3, device.header.Coeff4 = result[:6]
-            # for the big one the result there is more than 4 coefficients so you need to switch here the 6
-            year, month, day, hour, minute, second, device.header.Interval, device.header.Samples = map(int, result[6:])
+            # header is model, serialId, coeff[4 or 8], year, month, day, hour, minute, second, Interval, Sample count
+            device.header.Model, device.header.SerialId = result[:2]
+            for i in range(device.header.NumberCoefficients):
+                try:
+                    device.header.Coefficients[i] = float(result[i + 2])
+                except Exception:
+                    logging.critical("The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                    ShowPopUp(window, "The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                    return
+                    # for the big one the result there is more than 4 coefficients so you need to switch here the 6
+            try:
+                year, month, day, hour, minute, second, device.header.Interval, device.header.Samples = map(int, result[2 + device.header.NumberCoefficients:])
+            except Exception:
+                logging.critical("The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                ShowPopUp(window, "The Header collection failed because the number of correct coefficients was likely wrong, see previous output")
+                return
             device.header.Year, device.header.Month, device.header.Day, device.header.Hour, device.header.Minute, device.header.Second = validateDate(year, month, day, hour, minute, second)
         else:
             logging.critical("The Header collection failed, please report this bug")
             ShowPopUp(window, "The Header collection failed", "Please report this bug")
-
-        # Get Date saved on device as Year, month and day
+            return
+            # Get Date saved on device as Year, month and day
         date = GetCurrentDate()
         # Get Time saved on device as Hour, Minute and Seconds
         time = GetCurrentTime()
@@ -1151,6 +1212,24 @@ def ShowConfirmation(window, *args):
         window.Enable()
     else:
         window.UnHide()
+
+
+def coefficient_handler(window):
+    device.header.NumberCoefficients = (device.header.NumberCoefficients + 1) % 10
+    if len(device.header.Coefficients) < device.header.NumberCoefficients:
+        device.header.Coefficients.append(0.0)
+    device.header.Coefficients = device.header.Coefficients[0:device.header.NumberCoefficients]
+    _coeff_str = ""
+    maxi = device.header.NumberCoefficients // 2
+    if device.header.NumberCoefficients % 2 == 1:
+        maxi = device.header.NumberCoefficients // 2 + 1
+    for i in range(0, maxi):
+        _coeff_str += str(device.header.Coefficients[i]) + " "
+    _coeff_str += "\n"
+    for i in range(maxi, device.header.NumberCoefficients):
+        _coeff_str += str(device.header.Coefficients[i]) + " "
+    window.Element('_coefficients_').Update(_coeff_str)
+    window.Element('_number_coefficients_').Update(str(device.header.NumberCoefficients) + " coefficients")
 
 
 def sleep_handler(window, values):
